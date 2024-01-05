@@ -210,6 +210,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          ref: "${{ inputs.connector_branch }}"
+
       - name: Check docs dead links
         run: |
           sudo npm install -g markdown-link-check@3.10.0
@@ -258,6 +263,7 @@ jobs:
           ref: master
           sparse-checkout: |
             docs
+          path: flink
 
       - name: Copy connector docs
         run: |
