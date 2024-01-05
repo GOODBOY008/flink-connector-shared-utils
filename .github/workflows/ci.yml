@@ -279,4 +279,7 @@ jobs:
           extended: true
 
       - name: Build docs
-        run: hugo --source flink-docs/docs
+        run: |
+          echo "当前目录是: $(pwd)"
+          ls -la
+          hugo --source flink-docs/docs
