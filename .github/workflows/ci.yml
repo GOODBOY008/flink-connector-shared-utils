@@ -206,7 +206,7 @@ jobs:
           fi
           exit 0
 
-  docs_check:
+  check_and_build_docs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -251,14 +251,15 @@ jobs:
             markdown-link-check -c .dlc.json -q "$file"
           done
 
-      - name: Checkout docs
+      - name: Checkout flink docs
         uses: actions/checkout@v4
         with:
           repository: apache/flink
           ref: master
           sparse-checkout: |
-            .github
             docs
+
+      - name: Copy connector docs
         run: |
           theme_dir="flink/docs/themes/connectors"
           mkdir -p "${theme_dir}"
