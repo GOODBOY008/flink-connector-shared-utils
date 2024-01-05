@@ -265,15 +265,6 @@ jobs:
             docs
           path: flink-docs
 
-      - name: Copy connector docs
-        run: |
-          git config --global --add safe.directory $(pwd)/flink-docs
-          git submodule update --init --recursive
-          theme_dir="$(pwd)/flink-docs/docs/themes/connectors"
-          mkdir -p "${theme_dir}"
-#          rsync -a $(pwd)/docs/* "${theme_dir}/"
-          cd $(pwd)/flink-docs/docs
-          ls -la
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
