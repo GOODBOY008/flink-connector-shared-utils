@@ -270,8 +270,6 @@ jobs:
           theme_dir="$(pwd)/flink-docs/docs/themes/connectors"
           mkdir -p "${theme_dir}"
           rsync -a $(pwd)/docs/* "${theme_dir}/"
-          cd "${theme_dir}"
-          ls -la
           cd $(pwd)/flink-docs/docs
           ls -la
       - name: Setup Hugo
