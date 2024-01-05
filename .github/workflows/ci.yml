@@ -263,11 +263,12 @@ jobs:
           ref: master
           sparse-checkout: |
             docs
-          path: flink
+          path: ../flink
 
       - name: Copy connector docs
         run: |
-          theme_dir="flink/docs/themes/connectors"
+          echo "当前目录是: $(pwd)"
+          theme_dir="$(pwd)/flink/docs/themes/connectors"
           mkdir -p "${theme_dir}"
           rsync -a $(pwd)/docs/* "${theme_dir}/"
           
@@ -276,4 +277,4 @@ jobs:
         with:
           hugo-version: '0.119.0'
           extended: true
-          args: --source flink/docs
+          args: --source $(pwd)/flink/docs
