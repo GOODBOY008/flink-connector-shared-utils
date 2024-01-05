@@ -280,6 +280,7 @@ jobs:
 
       - name: Build docs
         run: |
-          echo "当前目录是: $(pwd)"
+          cd $(pwd)/flink-docs
           ls -la
-          hugo --source flink-docs/docs
+          hugo mod get -u
+          hugo --source docs
