@@ -247,7 +247,7 @@ jobs:
       - name: Check dead links
         run: |          
           sudo npm install -g markdown-link-check@3.10.0
-
+          cd $(pwd)/flink-docs
           echo '{
             "ignorePatterns": [
               {
@@ -280,9 +280,7 @@ jobs:
               403
             ]
           }' > .dlc.json
-          
-          cd $(pwd)/flink-docs
-          
+                    
           for file in $(find . -name "*.md"); do
             markdown-link-check -c .dlc.json -q "$file"
           done
