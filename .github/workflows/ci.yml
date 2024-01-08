@@ -215,10 +215,39 @@ jobs:
         with:
           ref: "${{ inputs.connector_branch }}"
 
-      - name: Check dead links
+      - name: Checkout flink docs
+        uses: actions/checkout@v4
+        with:
+          repository: apache/flink
+          ref: master
+          sparse-checkout: |
+            docs
+          path: flink-docs
+
+      - name: Prepare docs
         run: |
+          git config --global --add safe.directory $(pwd)/flink-docs
+          cd $(pwd)/flink-docs
+          git submodule update --init --recursive
+          cd ./docs
+          source setup_hugo.sh
+          connector=`echo ${GITHUB_REPOSITORY} | cut -d- -f3-`
+          sed -i "/integrate_connector_docs $connector/d" setup_docs.sh
+          source setup_docs.sh
+
+      - name: Rsync connector docs and build
+        run: |
+          if [ -d "$(pwd)/docs" ]; then
+            rsync -a $(pwd)/docs/* $(pwd)/flink-docs/docs/themes/connectors/
+          fi
+          cd $(pwd)/flink-docs
+          hugo mod get -u
+          hugo --source docs
+
+      - name: Check dead links
+        run: |          
           sudo npm install -g markdown-link-check@3.10.0
-          
+
           echo '{
             "ignorePatterns": [
               {
@@ -252,35 +281,8 @@ jobs:
             ]
           }' > .dlc.json
           
+          cd $(pwd)/flink-docs
+          
           for file in $(find . -name "*.md"); do
             markdown-link-check -c .dlc.json -q "$file"
           done
-
-      - name: Checkout flink docs
-        uses: actions/checkout@v4
-        with:
-          repository: apache/flink
-          ref: master
-          sparse-checkout: |
-            docs
-          path: flink-docs
-
-      - name: Prepare docs
-        run: |
-          git config --global --add safe.directory $(pwd)/flink-docs
-          cd $(pwd)/flink-docs
-          git submodule update --init --recursive
-          cd ./docs
-          source setup_hugo.sh
-          connector=`echo ${GITHUB_REPOSITORY} | cut -d- -f3-`
-          sed -i "/integrate_connector_docs $connector/d" setup_docs.sh
-          source setup_docs.sh
-
-      - name: Rsync connector docs and build
-        run: |
-          if [ -d "$(pwd)/docs" ]; then
-            rsync -a $(pwd)/docs/* $(pwd)/flink-docs/docs/themes/connectors/
-          fi
-          cd $(pwd)/flink-docs
-          hugo mod get -u
-          hugo --source docs
